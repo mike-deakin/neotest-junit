@@ -1,0 +1,1 @@
+let &rtp.=','.getcwd()
