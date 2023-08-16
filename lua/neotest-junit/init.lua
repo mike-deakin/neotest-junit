@@ -24,7 +24,14 @@ function Adapter.filter_dir(name, rel_path, root) end
 ---@async
 ---@param file_path string
 ---@return boolean
-function Adapter.is_test_file(file_path) end
+function Adapter.is_test_file(file_path)
+    for _, suffix in ipairs({'.java', '.kt', '.groovy', '.gvy'}) do
+        if string.match(file_path, 'Test' .. suffix .. '$') ~= nil then
+            return true
+        end
+    end
+    return false
+end
 
 ---Given a file path, parse all the tests within it.
 ---@async
