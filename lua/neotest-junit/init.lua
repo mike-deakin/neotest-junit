@@ -19,7 +19,9 @@ end
 ---@param rel_path string Path to directory, relative to root
 ---@param root string Root directory of project
 ---@return boolean
-function Adapter.filter_dir(name, rel_path, root) end
+function Adapter.filter_dir(name, rel_path, root)
+    return string.match(rel_path, 'src/test') ~= nil
+end
 
 ---@async
 ---@param file_path string
