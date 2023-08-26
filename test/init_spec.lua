@@ -65,7 +65,7 @@ describe('discover_positions treesitter query', function()
             },
             {
                 {
-                    id = spec_file .. '::SomeTest',
+                    id = spec_file .. '::SomeTest', -- TODO: change id to be a jvm path (org.some.pack.name.SomeTest in this case)
                     name = 'SomeTest',
                     path = spec_file,
                     range = { 2, 0, file_length(spec_file) - 1, 1 },
@@ -76,7 +76,7 @@ describe('discover_positions treesitter query', function()
                         id = spec_file .. '::SomeTest::shouldBeATest',
                         name = 'shouldBeATest',
                         path = spec_file,
-                        range = { 8, 4, 11, 5},
+                        range = { 8, 4, 11, 5 },
                         type = 'test'
                     }
                 }
@@ -84,5 +84,42 @@ describe('discover_positions treesitter query', function()
         }
 
         assert.same(expectedLocations, positions)
+    end)
+end)
+
+describe('build_spec', function()
+    describe('for gradle projects', function()
+        async.it('should run a test file', function()
+            local specFile = "./test/gradle-project/SomeTest.java"
+            local positions = adapter.discover_positions(specFile):to_list()
+            local tree = require 'neotest.types'.Tree.from_list(positions, function(pos)
+                return pos.id
+            end)
+            local spec = adapter.build_spec({ tree = tree })
+
+            assert.same("./gradlew test --tests " .. specFile, spec.command)
+        end)
+
+        async.it('should run a namespace (test class)', function()
+            local specFile = "./test/gradle-project/SomeTest.java"
+            local positions = adapter.discover_positions(specFile):to_list()
+            local tree = require 'neotest.types'.Tree.from_list(positions, function(pos)
+                return pos.id
+            end)
+            local spec = adapter.build_spec({ tree = tree:children()[1] })
+
+            assert.same("./gradlew test --tests SomeTest", spec.command)
+        end)
+
+        async.it('should run a test (test method)', function()
+            local specFile = "./test/gradle-project/SomeTest.java"
+            local positions = adapter.discover_positions(specFile):to_list()
+            local tree = require 'neotest.types'.Tree.from_list(positions, function(pos)
+                return pos.id
+            end)
+            local spec = adapter.build_spec({ tree = tree:children()[1]:children()[1] })
+
+            assert.same("./gradlew test --tests shouldBeATest", spec.command)
+        end)
     end)
 end)

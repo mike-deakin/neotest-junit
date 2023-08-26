@@ -43,9 +43,23 @@ function Adapter.is_test_file(file_path)
     return false
 end
 
+---@param node neotest.Tree
+local function spec_path(node)
+    local data = node:data()
+    if data.type == "file" then
+        return data.id
+    else
+        return data.name
+    end
+end
+
 ---@param args neotest.RunArgs
 ---@return nil | neotest.RunSpec | neotest.RunSpec[]
-function Adapter.build_spec(args) end
+function Adapter.build_spec(args)
+    return {
+        command = "./gradlew test --tests " .. spec_path(args.tree)
+    }
+end
 
 ---@async
 ---@param spec neotest.RunSpec
