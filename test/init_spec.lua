@@ -24,7 +24,7 @@ describe("Adapter root", function()
 end)
 
 describe('is_test_file check function', function()
-    for _, ext in ipairs({ '.java', '.kt', '.groovy', '.gvy' }) do
+    for _, ext in ipairs { '.java', '.kt', '.groovy', '.gvy' } do
         async.it('should return true for file names ending in "Test' .. ext .. '"', function()
             assert.True(adapter.is_test_file('SomeClassTest' .. ext))
         end)
@@ -40,9 +40,11 @@ describe('is_test_file check function', function()
 end)
 
 describe('filter_dir test file path filter', function()
-    async.it('should return true for src/test directories', function()
-        assert.True(adapter.filter_dir('anything', 'src/test/anything', './test/gradle-project'))
-    end)
+    for _, dir in ipairs { 'build', 'out', 'resources' } do
+        async.it('should return false for ' .. dir .. ' directory', function()
+            assert.False(adapter.filter_dir(dir, 'some/path/to/' .. dir, './test/gradle-project'))
+        end)
+    end
 end)
 
 describe('build_spec', function()

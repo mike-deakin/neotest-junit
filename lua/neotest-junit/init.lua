@@ -28,7 +28,12 @@ end
 ---@param root string Root directory of project
 ---@return boolean
 function Adapter.filter_dir(name, rel_path, root)
-    return string.match(rel_path, 'src/test') ~= nil
+    for _, value in ipairs({"build", "out", "resources"}) do
+        if value == name then
+            return false
+        end
+    end
+    return true
 end
 
 ---@async
