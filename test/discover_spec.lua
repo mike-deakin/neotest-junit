@@ -81,7 +81,7 @@ describe('discover_positions treesitter query', function()
     async.it('should derive gradle subproject name from file path', function ()
         vim.cmd('cd ./test/gradle-project')
         local spec_file_name = "DifferentTest.kt"
-        local spec_file = "./subproject/src/test/" .. spec_file_name
+        local spec_file = vim.fn.getcwd() .. "/subproject/src/test/" .. spec_file_name
         local positions = adapter.discover_positions(spec_file):to_list()
 
         local expectedLocations = {

@@ -1,4 +1,5 @@
 local lib = require 'neotest.lib'
+local path = require 'plenary.path'
 
 local M = {}
 
@@ -52,7 +53,9 @@ local function get_match_type(captured_nodes)
 end
 
 function M._build_position(file_path, source, captured_nodes)
-    local subproject = string.match(file_path, '^%.?/?(.*)/src')
+    local relative_path = path:new(file_path):make_relative(vim.fn.getcwd())
+    local subproject = string.match(relative_path, '(.*)/src')
+
     if subproject ~= nil then
         subproject = subproject:gsub('/', ':')
     end
