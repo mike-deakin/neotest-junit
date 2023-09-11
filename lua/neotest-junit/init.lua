@@ -61,8 +61,13 @@ end
 ---@param args neotest.RunArgs
 ---@return nil | neotest.RunSpec | neotest.RunSpec[]
 function Adapter.build_spec(args)
+    local subproject = args.tree:data().subproject
+    local command = 'test'
+    if subproject then
+        command = subproject .. ":" .. command
+    end
     return {
-        command = "./gradlew test --tests " .. spec_path(args.tree)
+        command = "./gradlew " .. command ..  " --tests " .. spec_path(args.tree)
     }
 end
 

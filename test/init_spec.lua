@@ -81,5 +81,17 @@ describe('build_spec', function()
 
             assert.same("./gradlew test --tests shouldBeATest", spec.command)
         end)
+
+        async.it('should run a test within a subproject', function ()
+            vim.cmd('cd ./test/gradle-project')
+            local specFile = "./subproject/src/test/DifferentTest.kt"
+            local positions = adapter.discover_positions(specFile):to_list()
+            local tree = require 'neotest.types'.Tree.from_list(positions, function(pos)
+                return pos.id
+            end)
+            local spec = adapter.build_spec({ tree = tree:children()[1]:children()[1] })
+
+            assert.same("./gradlew subproject:test --tests `should be a test`", spec.command)
+        end)
     end)
 end)
