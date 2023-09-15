@@ -53,9 +53,12 @@ local function spec_path(node)
     local data = node:data()
     if data.type == "file" then
         return data.id
-    else
-        return data.name
     end
+
+    local test_name = string.gsub(data.id, '^[^:]*::', '')
+    test_name = string.gsub(test_name, '::', '.')
+    test_name = string.gsub(test_name, '`', '')
+    return "'" .. test_name .. "'"
 end
 
 ---@param args neotest.RunArgs
