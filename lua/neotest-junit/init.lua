@@ -69,8 +69,9 @@ function Adapter.build_spec(args)
     if subproject then
         command = subproject .. ":" .. command
     end
+    local init_script = debug.getinfo(1).source:match("@?(.*/)") .. "test-init.gradle"
     return {
-        command = "./gradlew " .. command ..  " --tests " .. spec_path(args.tree)
+        command = "./gradlew -I " .. init_script .. " " .. command ..  " --tests " .. spec_path(args.tree)
     }
 end
 
