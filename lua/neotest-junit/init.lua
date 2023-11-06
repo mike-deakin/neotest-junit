@@ -6,7 +6,7 @@ local Adapter = {
     root = nil,
     filter_dir = nil,
     is_test_file = nil,
-    discover_positions = require'neotest-junit.discover'.discover_positions,
+    discover_positions = require 'neotest-junit.discover'.discover_positions,
     build_spec = nil,
     results = nil,
 }
@@ -28,7 +28,7 @@ end
 ---@param root string Root directory of project
 ---@return boolean
 function Adapter.filter_dir(name, rel_path, root)
-    for _, value in ipairs({"build", "out", "resources"}) do
+    for _, value in ipairs({ "build", "out", "resources" }) do
         if value == name then
             return false
         end
@@ -41,7 +41,7 @@ end
 ---@return boolean
 function Adapter.is_test_file(file_path)
     for _, suffix in ipairs({ '.java', '.kt', '.groovy', '.gvy' }) do
-        if string.match(file_path, 'Test' .. suffix .. '$') ~= nil then
+        if string.match(file_path, 'Test%' .. suffix .. '$') ~= nil then
             return true
         end
     end
@@ -71,7 +71,7 @@ function Adapter.build_spec(args)
     end
     local init_script = debug.getinfo(1).source:match("@?(.*/)") .. "test-init.gradle"
     return {
-        command = "./gradlew -I " .. init_script .. " " .. command ..  " --tests " .. spec_path(args.tree)
+        command = "./gradlew --console=plain -I " .. init_script .. " " .. command .. " --tests " .. spec_path(args.tree)
     }
 end
 
@@ -81,7 +81,20 @@ end
 ---@param tree neotest.Tree
 ---@return table<string, neotest.Result>
 function Adapter.results(spec, result, tree)
-    return {}
+    local outfile = result.output
+    local _, data = pcall(lib.files.read, outfile)
+
+    local pass = string.match(data, " (PASSED)")
+        or string.match(data, " (FAILED)")
+        or string.match(data, " (SKIPPED)")
+
+    return {
+        [tree:data().id] = {
+            output = outfile,
+            status = pass:lower(),
+            short = tree:data().name,
+        }
+    }
 end
 
 setmetatable(Adapter, {

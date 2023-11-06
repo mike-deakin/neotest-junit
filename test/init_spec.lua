@@ -57,7 +57,8 @@ describe('build_spec', function()
             end)
             local spec = adapter.build_spec({ tree = tree })
 
-            local match = string.match(spec.command, "^%./gradlew %-I .+ test %-%-tests %./test/gradle%-project/SomeTest%.java")
+            local match = string.match(spec.command,
+                "^%./gradlew %-I .+ test %-%-tests %./test/gradle%-project/SomeTest%.java")
             assert.not_equal(match, nil)
         end)
 
@@ -85,7 +86,7 @@ describe('build_spec', function()
             assert.not_equal(match, nil)
         end)
 
-        async.it('should run a test within a subproject', function ()
+        async.it('should run a test within a subproject', function()
             vim.cmd('cd ./test/gradle-project')
             local specFile = vim.fn.getcwd() .. "/subproject/src/test/DifferentTest.kt"
             local positions = adapter.discover_positions(specFile):to_list()
@@ -94,8 +95,15 @@ describe('build_spec', function()
             end)
             local spec = adapter.build_spec({ tree = tree:children()[1]:children()[1] })
 
-            local match = string.match(spec.command, "^%./gradlew %-I .+ subproject:test %-%-tests 'DifferentTest%.should be a test'$")
+            local match = string.match(spec.command,
+                "^%./gradlew %-I .+ subproject:test %-%-tests 'DifferentTest%.should be a test'$")
             assert.not_equal(match, nil)
         end)
+    end)
+end)
+
+describe('result', function ()
+    assert.it('should report a single test failure', function ()
+        
     end)
 end)
